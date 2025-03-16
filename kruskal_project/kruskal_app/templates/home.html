@@ -1,0 +1,281 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kruskal & Prim's Algorithm</title>
+    <style>
+        /* General Styling */
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: #f8f9fa;
+            text-align: center;
+            margin: 0;
+            padding: 0;
+        }
+
+        /* Main Container */
+        .container {
+            width: 60%;
+            max-width: 800px;
+            margin: 40px auto;
+            background: white;
+            padding: 25px;
+            box-shadow: 0px 4px 15px rgba(0, 0, 0, 0.1);
+            border-radius: 12px;
+        }
+
+        /* Input Fields and Select Dropdown */
+        input,
+        select {
+            margin: 10px 0;
+            padding: 10px;
+            width: 95%;
+            font-size: 16px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            transition: all 0.3s ease-in-out;
+        }
+
+        input:focus,
+        select:focus {
+            border-color: #007bff;
+            outline: none;
+            box-shadow: 0px 0px 8px rgba(0, 123, 255, 0.2);
+        }
+
+        /* Buttons */
+        button {
+            background-color: #007bff;
+            color: white;
+            border: none;
+            cursor: pointer;
+            padding: 12px;
+            font-size: 16px;
+            border-radius: 6px;
+            transition: background 0.3s ease-in-out, transform 0.2s ease-in-out;
+            width: 100%;
+            margin: 10px 0;
+        }
+
+        button:hover {
+            background-color: #0056b3;
+            transform: scale(1.05);
+        }
+
+        /* Graph Section */
+        .graph-section {
+            margin-top: 25px;
+        }
+
+        img {
+            width: 100%;
+            max-width: 600px;
+            border-radius: 8px;
+            box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.2);
+        }
+
+        /* Tables */
+        table {
+            width: 100%;
+            margin: 20px auto;
+            border-collapse: collapse;
+            box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+            background: white;
+        }
+
+        th,
+        td {
+            padding: 12px;
+            border: 1px solid #ddd;
+            text-align: center;
+            font-size: 16px;
+        }
+
+        th {
+            background-color: #007bff;
+            color: white;
+        }
+
+        /* Styling for Vertices */
+        #vertices-list ul {
+            list-style-type: none;
+            padding: 0;
+        }
+
+        #vertices-list li {
+            display: inline-block;
+            padding: 8px 12px;
+            background: #28a745;
+            color: white;
+            margin: 5px;
+            border-radius: 6px;
+            font-size: 16px;
+        }
+
+        /* Error Message Box */
+        .error-message {
+            background-color: #ffcccc;
+            color: #d8000c;
+            padding: 10px;
+            margin-bottom: 15px;
+            border-radius: 6px;
+            font-size: 16px;
+            font-weight: bold;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .container {
+                width: 90%;
+                padding: 15px;
+            }
+
+            input,
+            select {
+                width: 100%;
+            }
+        }
+    </style>
+    <script>
+        function updateStartNodeDropdown() {
+            let algorithm = document.getElementById("algorithm").value;
+            let startNodeSelect = document.getElementById("start-node");
+
+            if (algorithm === "prim") {
+                startNodeSelect.disabled = false;
+            } else {
+                startNodeSelect.disabled = true;
+            }
+        }
+
+        function updateVertices() {
+            let vertexInput = document.getElementById("vertices").value;
+            let startNodeSelect = document.getElementById("start-node");
+            startNodeSelect.innerHTML = "";  // Clear previous options
+
+            let vertices = vertexInput.split(',').map(v => v.trim()).filter(v => v !== ""); // Clean up spaces
+
+            vertices.forEach(vertex => {
+                let option = document.createElement("option");
+                option.value = vertex;
+                option.textContent = vertex;
+                startNodeSelect.appendChild(option);
+            });
+        }
+    </script>
+</head>
+
+<body>
+    <div class="container">
+        <h2>Kruskal & Prim's Algorithm</h2>
+
+        <!-- Error Message for Disconnected Graph -->
+        {% if error_message %}
+        <div style="background-color: #ffcccc; color: #d8000c; padding: 10px; margin-bottom: 15px; border-radius: 5px;">
+            <strong>{{ error_message }}</strong>
+        </div>
+        {% endif %}
+
+        <form id="graph-form" method="post">
+            {% csrf_token %}
+
+            <label>Vertices (comma separated):</label>
+            <input type="text" id="vertices" name="vertices" required oninput="updateVertices()"><br>
+
+            <label>Edges (format: A,B,1; B,C,2):</label>
+            <input type="text" name="edges" required><br>
+
+            <label>Select Algorithm:</label>
+            <select name="algorithm" id="algorithm" required onchange="updateStartNodeDropdown()">
+                <option value="kruskal" {% if algorithm == "kruskal" %}selected{% endif %}>Kruskal's Algorithm</option>
+                <option value="prim" {% if algorithm == "prim" %}selected{% endif %}>Prim's Algorithm</option>
+            </select><br>
+
+            <label>Select Start Node (For Prim's Algorithm Only):</label>
+            <select name="start_node" id="start-node" {% if algorithm != "prim" %}disabled{% endif %}>
+                {% for vertex in vertices %}
+                <option value="{{ vertex }}" {% if vertex == start_node %}selected{% endif %}>{{ vertex }}</option>
+                {% endfor %}
+            </select><br>
+
+            <button type="submit">Find MST</button>
+        </form>
+
+        <!-- Only Show These Details If There's No Error -->
+        {% if not error_message %}
+
+        <!-- Display Entered Nodes -->
+        {% if vertices %}
+        <div id="vertices-list">
+            <h3>Entered Nodes</h3>
+            <ul style="list-style-type: none; padding: 0;">
+                {% for vertex in vertices %}
+                <li
+                    style="display: inline-block; padding: 5px 10px; background: #28a745; color: white; margin: 5px; border-radius: 5px;">
+                    {{ vertex }}</li>
+                {% endfor %}
+            </ul>
+        </div>
+        {% endif %}
+
+        <!-- Table for All Edges -->
+        {% if edges %}
+        <div id="all-edges">
+            <h3>All Edges</h3>
+            <table>
+                <tr>
+                    <th>Edge</th>
+                    <th>Weight</th>
+                </tr>
+                {% for edge in edges %}
+                <tr>
+                    <td>{{ edge.0 }} - {{ edge.1 }}</td>
+                    <td>{{ edge.2 }}</td>
+                </tr>
+                {% endfor %}
+            </table>
+        </div>
+        {% endif %}
+
+        <!-- Table for Selected MST Edges -->
+        {% if mst %}
+        <div id="priority-table">
+            <h3>Selected MST Edges</h3>
+            <table>
+                <tr>
+                    <th>Priority</th>
+                    <th>Edge</th>
+                    <th>Weight</th>
+                </tr>
+                {% for edge in mst %}
+                <tr>
+                    <td>{{ edge.3 }}</td> <!-- Priority -->
+                    <td>{{ edge.0 }} - {{ edge.1 }}</td> <!-- Edge -->
+                    <td>{{ edge.2 }}</td> <!-- Weight -->
+                </tr>
+                {% endfor %}
+            </table>
+        </div>
+        {% endif %}
+
+        <!-- Graph Visualization -->
+        {% if graph_image and mst_image %}
+        <div class="graph-section" id="original-section">
+            <h3>Original Graph</h3>
+            <img id="original-graph" src="{{ graph_image }}" alt="Original Graph">
+        </div>
+        <div class="graph-section" id="mst-section">
+            <h3>{{ algorithm|title }} MST</h3>
+            <img id="mst-graph" src="{{ mst_image }}" alt="{{ algorithm }} MST Graph">
+        </div>
+        {% endif %}
+
+        {% endif %} <!-- END HIDE IF ERROR MESSAGE EXISTS -->
+
+    </div>
+</body>
+
+
+</html>

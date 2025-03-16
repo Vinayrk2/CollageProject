@@ -1,0 +1,69 @@
+# Python Bytecode and Compiled Files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Virtual Environment
+venv/
+.env
+*.env
+
+# Django Specific Files
+*.log
+db.sqlite3
+media/
+staticfiles/
+
+# Migrations
+*/migrations/*
+!*/migrations/__init__.py
+
+# IDE Specific Files
+.idea/
+.vscode/
+
+# Coverage Reports
+htmlcov/
+.coverage
+*.cover
+
+# Test and Debug Output
+.tox/
+.nox/
+
+# OS Files
+.DS_Store
+Thumbs.db
+
+# Node Modules (if using npm/yarn for frontend)
+node_modules/
+
+# Compiled Cache Files
+*.pyc
+*.pyo
+
+# Docker Files
+docker-compose.override.yml
+
+# AWS/Cloud Specific
+*.pem
+*.key
+*.crt
+
+# Local Development Secrets
+*.sqlite3
+*.bak
+.env.local
+
+# Ignore IDE-specific and editor-related files
+*.iml
+*.swp
+*.swo
+*.swn
+
+# Celery Beat Schedule
+celerybeat-schedule
+
+# Static and Media files (if collected outside the project root)
+/static/
+/media/
