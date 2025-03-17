@@ -26,7 +26,7 @@ SECRET_KEY = "django-insecure-t3a+j060k0_m^5&(d08z*4_b7oz3w$joqcmbg0p-oya#j#$r3_
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = False
 
-ALLOWED_HOSTS = ["ec2-52-66-252-55.ap-south-1.compute.amazonaws.com","52.66.252.55","ap-south-1.compute.amazonaws.com"]
+ALLOWED_HOSTS = ["ec2-52-66-252-55.ap-south-1.compute.amazonaws.com","52.66.252.55","ap-south-1.compute.amazonaws.com","127.0.0.1"]
 
 
 # Application definition
@@ -118,7 +118,7 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/5.1/howto/static-files/
 
 STATIC_URL = '/static/'
-STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
+STATIC_ROOT = os.path.join(BASE_DIR, 'kruskal_app/static')
 MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
@@ -128,5 +128,5 @@ MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
-STATICFILES_DIRS = [os.path.join(BASE_DIR, 'kruskal_app/static')]
+# STATICFILES_DIRS = [os.path.join(BASE_DIR, 'kruskal_app/static')]
 
